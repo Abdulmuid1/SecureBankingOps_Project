@@ -1,0 +1,52 @@
+name: CI/CD
+
+on:
+  push:
+    paths:
+      - 'services/**'
+      - 'helm-charts/**'
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      ACR_NAME: securebankingopsacr       
+      ACR_LOGIN: securebankingopsacr.azurecr.io
+      RESOURCE_GROUP: securebankingops-rg
+      AKS_CLUSTER: securebankingops-aks
+      K8S_NAMESPACE: securebankingops
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}   
+
+      - name: Get AKS credentials
+        run: az aks get-credentials -g $RESOURCE_GROUP -n $AKS_CLUSTER --overwrite-existing
+
+      - name: Build and push images
+        run: |
+          IMAGE=${{ env.ACR_LOGIN }}/auth-service:${GITHUB_SHA::8}
+          az acr build --registry $ACR_NAME --image $IMAGE services/auth-service
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v1
+        with:
+          image-ref: ${{ env.ACR_LOGIN }}/auth-service:${GITHUB_SHA::8}
+
+      - name: Helm upgrade/install
+        run: |
+          helm upgrade --install auth-service helm-charts/auth-service \
+            --namespace $K8S_NAMESPACE --create-namespace \
+            --set image.repository=${{ env.ACR_LOGIN }}/auth-service \
+            --set image.tag=${GITHUB_SHA::8}
