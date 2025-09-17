@@ -2,9 +2,6 @@ name: CI/CD
 
 on:
   push:
-    paths:
-      - 'services/**'
-      - 'helm-charts/**'
     branches: [ main ]
 
 jobs:
