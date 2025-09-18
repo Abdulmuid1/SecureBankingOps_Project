@@ -41,10 +41,19 @@ jobs:
           docker build -t $IMAGE services/auth-service
           docker push $IMAGE    
 
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner (filesystem)
         uses: aquasecurity/trivy-action@0.12.0
         with:
           scan-type: filesystem
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          input: '.' # the repo root
+
+      - name: Run Trivy vulnerability scanner (image)
+        uses: aquasecurity/trivy-action@0.12.0
+        with:
+          scan-type: image
+          image-ref: ${{ env.ACR_LOGIN }}/${{ github.repository }}:${{ github.sha }}
           ignore-unfixed: true
           severity: CRITICAL,HIGH
 
