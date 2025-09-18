@@ -31,10 +31,15 @@ jobs:
       - name: Get AKS credentials
         run: az aks get-credentials -g $RESOURCE_GROUP -n $AKS_CLUSTER --overwrite-existing
 
-      - name: Build and push images
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name $ACR_NAME
+
+      - name: Build and push Docker image
         run: |
           IMAGE=${{ env.ACR_LOGIN }}/auth-service:${GITHUB_SHA::8}
-          az acr build --registry $ACR_NAME --image $IMAGE services/auth-service
+          docker build -t $IMAGE services/auth-service
+          docker push $IMAGE    
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.12.0
