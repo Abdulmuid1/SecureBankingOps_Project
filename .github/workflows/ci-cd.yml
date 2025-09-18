@@ -32,28 +32,29 @@ jobs:
         run: az aks get-credentials -g $RESOURCE_GROUP -n $AKS_CLUSTER --overwrite-existing
 
       - name: Log in to Azure Container Registry
-        run: |
-          az acr login --name $ACR_NAME
+        run: az acr login --name $ACR_NAME
 
       - name: Build and push Docker image
         run: |
           IMAGE=${{ env.ACR_LOGIN }}/auth-service:${GITHUB_SHA::8}
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
           docker build -t $IMAGE services/auth-service
           docker push $IMAGE    
 
       - name: Run Trivy vulnerability scanner (filesystem)
         uses: aquasecurity/trivy-action@0.12.0
         with:
-          scan-type: filesystem
+          scan-type: fs
+          scan-ref: .
           ignore-unfixed: true
           severity: CRITICAL,HIGH
-          input: '.' # the repo root
+          
 
       - name: Run Trivy vulnerability scanner (image)
         uses: aquasecurity/trivy-action@0.12.0
         with:
           scan-type: image
-          image-ref: ${{ env.ACR_LOGIN }}/${{ github.repository }}:${{ github.sha }}
+          image-ref: ${{ env.IMAGE }}
           ignore-unfixed: true
           severity: CRITICAL,HIGH
 
