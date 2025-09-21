@@ -11,5 +11,5 @@ variable "aks_cluster_name" {
 }
 
 variable "node_count" {
-  default = 2
+  default = 1
 }

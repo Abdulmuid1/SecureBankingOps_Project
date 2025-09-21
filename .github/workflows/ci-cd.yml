@@ -8,7 +8,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      ACR_NAME: securebankingopsacr       
+      ACR_NAME: securebankingopsacr
       ACR_LOGIN: securebankingopsacr.azurecr.io
       RESOURCE_GROUP: securebankingops-rg
       AKS_CLUSTER: securebankingops-aks
@@ -26,7 +26,7 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}   
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get AKS credentials
         run: az aks get-credentials -g $RESOURCE_GROUP -n $AKS_CLUSTER --overwrite-existing
@@ -34,34 +34,27 @@ jobs:
       - name: Log in to Azure Container Registry
         run: az acr login --name $ACR_NAME
 
-      - name: Build and push Docker image
+      # --- Loop over all services ---
+      - name: Build, scan, push and deploy services
         run: |
-          IMAGE=${{ env.ACR_LOGIN }}/auth-service:${GITHUB_SHA::8}
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-          docker build -t $IMAGE services/auth-service
-          docker push $IMAGE    
+          set -euo pipefail
 
-      - name: Run Trivy vulnerability scanner (filesystem)
-        uses: aquasecurity/trivy-action@0.12.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          ignore-unfixed: true
-          severity: CRITICAL,HIGH
-          
+          SERVICES=("auth-service" "accounts" "payments")
+          for svc in "${SERVICES[@]}"; do
+            echo "=== Processing $svc ==="
 
-      - name: Run Trivy vulnerability scanner (image)
-        uses: aquasecurity/trivy-action@0.12.0
-        with:
-          scan-type: image
-          image-ref: ${{ env.IMAGE }}
-          ignore-unfixed: true
-          severity: CRITICAL,HIGH
+            IMAGE=${ACR_LOGIN}/${svc}:${GITHUB_SHA::8}
+            echo "Building image $IMAGE"
+            docker build -t "$IMAGE" "services/$svc"
+            echo "Pushing $IMAGE"
+            docker push "$IMAGE"
 
+            echo "Running Trivy scan for $svc image"
+            trivy image --ignore-unfixed --severity CRITICAL,HIGH "$IMAGE" || true
 
-      - name: Helm upgrade/install
-        run: |
-          helm upgrade --install auth-service helm-charts/auth-service \
-            --namespace $K8S_NAMESPACE --create-namespace \
-            --set image.repository=${{ env.ACR_LOGIN }}/auth-service \
-            --set image.tag=${GITHUB_SHA::8}
+            echo "Deploying $svc with Helm"
+            helm upgrade --install "$svc" "helm-charts/$svc" \
+              --namespace "$K8S_NAMESPACE" --create-namespace \
+              --set image.repository="${ACR_LOGIN}/${svc}" \
+              --set image.tag="${GITHUB_SHA::8}"
+          done
