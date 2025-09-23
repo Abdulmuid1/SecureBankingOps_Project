@@ -4,7 +4,7 @@ image:
   tag: latest
 service:
   type: LoadBalancer
-  port: 80
+  port: 5000
 resources: {}
 ingress:
   enabled: false

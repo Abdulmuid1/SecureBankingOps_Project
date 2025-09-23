@@ -16,10 +16,10 @@ spec:
         - name: accounts
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
-            - containerPort: 5000
+            - containerPort: 5001
           readinessProbe:
             httpGet:
               path: /health
-              port: 5000
+              port: 5001
             initialDelaySeconds: 5
             periodSeconds: 10
