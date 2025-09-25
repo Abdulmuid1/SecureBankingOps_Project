@@ -3,6 +3,11 @@ from flask import Flask, request, jsonify
 # Create Flask app
 app = Flask(__name__)
 
+# Route for health check
+@app.route("/health")
+def health():
+    return "OK", 200
+
 # Send a payment
 @app.route("/payments/send", methods=["POST"])
 def send_payment():

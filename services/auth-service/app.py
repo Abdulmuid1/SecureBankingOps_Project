@@ -4,6 +4,11 @@ from flask import Flask, request, jsonify
 # Create the Flask app
 app = Flask(__name__)
 
+# Route for health check
+@app.route("/health")
+def health():
+    return "OK", 200
+    
 # Route for user signup
 @app.route("/signup", methods=["POST"])
 def signup():

@@ -3,6 +3,11 @@ from flask import Flask, request, jsonify
 # Create Flask app
 app = Flask(__name__)
 
+# Route for health check
+@app.route("/health")
+def health():
+    return "OK", 200
+
 # Get account info for a specific user
 @app.route("/accounts/<user_id>", methods=["GET"])
 def get_account(user_id):
