@@ -3,8 +3,10 @@ image:
   repository: <ACR_LOGIN_SERVER>/auth-service
   tag: latest
 service:
-  type: LoadBalancer
+  type: NodePort
   port: 5000
+  targetPort: 5000
+  nodePort: 31000
 resources: {}
 ingress:
   enabled: false

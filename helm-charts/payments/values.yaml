@@ -3,8 +3,10 @@ image:
   repository: <ACR_LOGIN_SERVER>/payments
   tag: latest
 service:
-  type: LoadBalancer
+  type: NodePort
   port: 5002
+  targetPort: 5002
+  nodePort: 31002 
 resources: {}
 ingress:
   enabled: false
