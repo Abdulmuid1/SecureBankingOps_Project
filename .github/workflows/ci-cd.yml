@@ -67,8 +67,11 @@ jobs:
             docker push "$IMAGE"
 
             echo "Running Trivy scan for $svc image"
-            # Fail if CRITICAL or HIGH vulnerabilities found
+            # Scan Image: Fail if CRITICAL or HIGH vulnerabilities found
             trivy image --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed=false "$IMAGE"
+
+            # Scan source code
+            trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed=false .
 
             echo "Deploying $svc with Helm"
             helm upgrade --install "$svc" "helm-charts/$svc" \
