@@ -79,5 +79,5 @@ jobs:
               --namespace "$K8S_NAMESPACE" --create-namespace \
               --set image.repository="${ACR_LOGIN}/${svc}" \
               --set image.tag="${GITHUB_SHA::8}"\
-              --wait --timeout 2m --atomic
+              --wait --timeout 3m --atomic
           done
