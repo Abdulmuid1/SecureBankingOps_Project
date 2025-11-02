@@ -42,6 +42,7 @@ jobs:
       # Install Trivy to scan containers
       - name: Install Trivy
         run: |
+          set -x
           sudo apt-get update
           sudo apt-get install -y wget apt-transport-https gnupg lsb-release
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
@@ -52,7 +53,7 @@ jobs:
       # Build, scan, push, and deploy services
       - name: Build, scan, push and deploy services
         run: |
-          set -euo pipefail
+          set -xeuo pipefail
 
           SERVICES=("auth-service" "accounts" "payments")
           for svc in "${SERVICES[@]}"; do
@@ -77,6 +78,6 @@ jobs:
             helm upgrade --install "$svc" "helm-charts/$svc" \
               --namespace "$K8S_NAMESPACE" --create-namespace \
               --set image.repository="${ACR_LOGIN}/${svc}" \
-              --set image.tag="${GITHUB_SHA::8}"
+              --set image.tag="${GITHUB_SHA::8}"\
               --wait --timeout 10m --atomic
           done
