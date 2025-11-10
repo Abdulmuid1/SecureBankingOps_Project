@@ -55,7 +55,7 @@ jobs:
         run: |
           set -xeuo pipefail
 
-          SERVICES=("auth-service" "accounts" "payments")
+          SERVICES=("auth-service" "accounts" "payments" "frontend")
           for svc in "${SERVICES[@]}"; do
             echo "=== Processing $svc ==="
 
@@ -79,5 +79,5 @@ jobs:
               --namespace "$K8S_NAMESPACE" --create-namespace \
               --set image.repository="${ACR_LOGIN}/${svc}" \
               --set image.tag="${GITHUB_SHA::8}"\
-              --wait --timeout 3m --atomic
+              --wait --timeout 5m --atomic
           done
