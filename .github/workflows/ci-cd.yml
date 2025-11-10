@@ -63,12 +63,12 @@ jobs:
 
             if [ "$svc" = "frontend" ]; then
               echo "Building frontend image $IMAGE"
-              docker build -t "$IMAGE" -f frontend/Dockerfile .
+              docker build -t "$IMAGE" -f services/frontend/Dockerfile .
             else
               echo "Building image $IMAGE"
               docker build -t "$IMAGE" "services/$svc"
             fi
-            
+
             echo "Pushing $IMAGE"
             docker push "$IMAGE"
 
