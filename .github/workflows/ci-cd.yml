@@ -55,7 +55,7 @@ jobs:
         run: |
           set -xeuo pipefail
           cd services/frontend/client
-          npm ci
+          npm install --no-audit --no-fund
           npm run build
 
       # Build, scan, push, and deploy services
@@ -71,7 +71,7 @@ jobs:
 
             if [ "$svc" = "frontend" ]; then
               echo "Building frontend image $IMAGE"
-              docker build -t "$IMAGE" -f services/frontend
+              docker build -t "$IMAGE" -f "services/frontend"
             else
               echo "Building image $IMAGE"
               docker build -t "$IMAGE" "services/$svc"
