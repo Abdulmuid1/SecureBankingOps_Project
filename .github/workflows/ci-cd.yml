@@ -50,6 +50,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y trivy  
 
+      # Build React frontend
+      - name: Build React frontend
+        run: |
+          set -xeuo pipefail
+          cd services/frontend/client
+          npm ci
+          npm run build
+
       # Build, scan, push, and deploy services
       - name: Build, scan, push and deploy services
         run: |
@@ -63,7 +71,7 @@ jobs:
 
             if [ "$svc" = "frontend" ]; then
               echo "Building frontend image $IMAGE"
-              docker build -t "$IMAGE" -f services/frontend/Dockerfile .
+              docker build -t "$IMAGE" -f services/frontend
             else
               echo "Building image $IMAGE"
               docker build -t "$IMAGE" "services/$svc"
