@@ -1,6 +1,6 @@
 FROM nginx:alpine
 RUN rm /etc/nginx/conf.d/default.conf
 COPY ../client/build/ /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY services/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
