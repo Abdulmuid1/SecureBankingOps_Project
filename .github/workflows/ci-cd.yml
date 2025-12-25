@@ -50,6 +50,35 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y trivy  
 
+      # Run Tests for Python Microservices
+      - name: Run Unit Tests for auth-service, accounts, and payments
+        run: |
+          set -xeuo pipefail
+          
+          # Python services to br tested 
+          PYTHON_SERVICES=("auth-service" "accounts" "payments")
+          
+          for svc in "${PYTHON_SERVICES[@]}"; do
+            echo "------------------------------------------------"
+            echo " Testing Service: $svc"
+            echo "------------------------------------------------"
+            
+            # Go into the service directory
+            cd "services/$svc"
+            
+            # Install dependencies locally for the test runner
+            # (We use --user or a venv usually, but raw install is fine for ephemeral CI runners)
+            pip install -r requirements.txt
+            pip install pytest
+            
+            # Run the test file in each service directory
+            # We use 'python -m unittest' to auto-discover tests
+            python -m unittest test_app.py
+            
+            # Go back to root for the next loop
+            cd ../..
+          done
+
       # Build React frontend
       - name: Build React frontend
         run: |
