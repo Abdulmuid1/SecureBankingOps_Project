@@ -12,6 +12,13 @@ spec:
       labels:
         app: {{ include "auth-service.name" . }}
     spec:
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-kv-auth-secrets"
       containers:
         - name: auth
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -23,3 +30,7 @@ spec:
               port: 5000
             initialDelaySeconds: 5
             periodSeconds: 10
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
