@@ -2,7 +2,9 @@
 from flask import Flask, request, jsonify
 
 # Import Prometheus tools
-from prometheus_client import start_http_server, Counter
+# generate_latest: Grabs all the data from the counters
+# CONTENT_TYPE_LATEST: Tells the browser it's Prometheus data
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
 """
     Define Custom Metrics
@@ -14,6 +16,12 @@ LOGIN_SUCCESS = Counter('auth_login_success_total', 'Total successful logins')
 
 # Create the Flask app
 app = Flask(__name__)
+
+# Route for Metrics
+@app.route('/metrics')
+def metrics():
+    # Return the current value of all counters
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 # Route for health check
 @app.route("/health")
@@ -55,8 +63,4 @@ def refresh():
 
 # Run the app on all network interfaces, port 5000
 if __name__ == "__main__":
-    # Start the Prometheus Metrics Server on Port 8000
-    start_http_server(8000)
-    
-    # Run the main Flask app on port 5000
     app.run(host="0.0.0.0", port=5000)
