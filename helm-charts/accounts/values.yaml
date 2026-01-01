@@ -1,6 +1,6 @@
 replicaCount: 2
 image:
-  repository: <ACR_LOGIN_SERVER>/accounts
+  repository: securebankingopsacr.azurecr.io/accounts
   tag: latest
 service:
   type: NodePort
