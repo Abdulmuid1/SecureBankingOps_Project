@@ -1,6 +1,8 @@
 image:
   repository: securebankingopsacr.azurecr.io/frontend
   tag: proxy
+  pullSecrets: 
+    - name: acr-secret
 
 replicaCount: 1
 
