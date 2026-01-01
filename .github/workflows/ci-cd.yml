@@ -97,6 +97,7 @@ jobs:
             echo "=== Processing $svc ==="
 
             IMAGE=${ACR_LOGIN}/${svc}:${GITHUB_SHA::8}
+            IMAGE_LATEST=${ACR_LOGIN}/${svc}:latest
 
             if [ "$svc" = "frontend" ]; then
               echo "Building frontend image $IMAGE"
@@ -116,10 +117,10 @@ jobs:
             # Scan source code
             trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed=false .
 
-            echo "Deploying $svc with Helm"
-            helm upgrade --install "$svc" "helm-charts/$svc" \
-              --namespace "$K8S_NAMESPACE" --create-namespace \
-              --set image.repository="${ACR_LOGIN}/${svc}" \
-              --set image.tag="${GITHUB_SHA::8}"\
-              --wait --timeout 5m --atomic
+           # echo "Deploying $svc with Helm"
+           # helm upgrade --install "$svc" "helm-charts/$svc" \
+            #  --namespace "$K8S_NAMESPACE" --create-namespace \
+            #  --set image.repository="${ACR_LOGIN}/${svc}" \
+            #  --set image.tag="${GITHUB_SHA::8}"\
+            #  --wait --timeout 5m --atomic
           done
