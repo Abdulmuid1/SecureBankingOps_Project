@@ -2,6 +2,8 @@ replicaCount: 2
 image:
   repository: securebankingopsacr.azurecr.io/accounts
   tag: latest
+  pullSecrets: 
+    - name: acr-secret
 service:
   type: NodePort
   port: 5001
