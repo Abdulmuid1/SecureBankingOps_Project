@@ -1,6 +1,6 @@
 image:
   repository: securebankingopsacr.azurecr.io/frontend
-  tag: proxy
+  tag: latest
   pullSecrets: 
     - name: acr-secret
 
