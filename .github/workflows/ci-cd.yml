@@ -107,8 +107,13 @@ jobs:
               docker build -t "$IMAGE" "services/$svc"
             fi
 
+            # Tag as latest
+            docker tag "$IMAGE" "$IMAGE_LATEST"
+            
+            # Push both tags
             echo "Pushing $IMAGE"
             docker push "$IMAGE"
+            docker push "$IMAGE_LATEST"
 
             echo "Running Trivy scan for $svc image"
             # Scan Image: Fail if CRITICAL or HIGH vulnerabilities found
@@ -117,6 +122,7 @@ jobs:
             # Scan source code
             trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed=false .
 
+           # Commented the block of code to avoid confliction with argocd 
            # echo "Deploying $svc with Helm"
            # helm upgrade --install "$svc" "helm-charts/$svc" \
             #  --namespace "$K8S_NAMESPACE" --create-namespace \
