@@ -1,6 +1,0 @@
-# observability/slis-slos/slo.yaml (informational)
-slo:
-  name: auth-availability
-  target: 99.9
-  window_days: 30
-  sli: availability
