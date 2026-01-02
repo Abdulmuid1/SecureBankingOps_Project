@@ -12,6 +12,9 @@ spec:
       labels:
         app: {{ include "accounts.name" . }}
     spec:
+      imagePullSecrets:
+        {{- toYaml .Values.image.pullSecrets | nindent 8 }}
+        
       containers:
         - name: accounts
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
