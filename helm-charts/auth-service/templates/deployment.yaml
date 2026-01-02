@@ -23,6 +23,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "azure-kv-auth-secrets"
+      imagePullSecrets:
+        {{- toYaml .Values.image.pullSecrets | nindent 8 }}
+          
       containers:
         - name: auth
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
