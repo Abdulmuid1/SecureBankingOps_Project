@@ -26,8 +26,8 @@ graph TD
             
             Ingress -->|/| Frontend["Frontend Service <br/> (React)"]
             Ingress -->|/auth| Auth["Auth Service <br/> (Python)"]
-            Ingress -->|/accounts| Accounts[Accounts Service <br/> (Python)]
-            Ingress -->|/payments| Payments[Payments Service <br/> (Python)]
+            Ingress -->|/accounts| Accounts["Accounts Service <br/> (Python)"]
+            Ingress -->|/payments| Payments["Payments Service <br/> (Python)"]
         end
     end
     
