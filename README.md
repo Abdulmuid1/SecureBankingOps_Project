@@ -24,8 +24,8 @@ graph TD
         subgraph AKS_Cluster [AKS Cluster]
             style AKS_Cluster fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#000
             
-            Ingress -->|/| Frontend[Frontend Service <br/> (React)]
-            Ingress -->|/auth| Auth[Auth Service <br/> (Python)]
+            Ingress -->|/| Frontend["Frontend Service <br/> (React)"]
+            Ingress -->|/auth| Auth["Auth Service <br/> (Python)"]
             Ingress -->|/accounts| Accounts[Accounts Service <br/> (Python)]
             Ingress -->|/payments| Payments[Payments Service <br/> (Python)]
         end
